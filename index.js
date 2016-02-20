@@ -23,10 +23,10 @@ server.connection({
 });
 
 server.register([require('vision'), require('inert'), { register: require('lout') }], function(err) {
-  server.register([{
-    register: require('./plugins/public.js'),
-    options: {}
-  }], function(err) {
+  server.register([
+    {register: require('./plugins/public.js'), options: {}},
+    {register: require('./plugins/account.js'), options: {}}
+  ], function(err) {
     if (err) {
       throw err;
     }
