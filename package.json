@@ -1,0 +1,26 @@
+{
+  "name": "storyworld",
+  "version": "1.0.0",
+  "description": "server application to create and explore stories",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitterulf/storyworld.git"
+  },
+  "author": "Sebastian Kannegiesser",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/bitterulf/storyworld/issues"
+  },
+  "homepage": "https://github.com/bitterulf/storyworld#readme",
+  "dependencies": {
+    "hapi": "^13.0.0",
+    "inert": "^3.2.0",
+    "lout": "^9.0.0",
+    "nconf": "^0.8.4",
+    "vision": "^4.0.1"
+  }
+}
