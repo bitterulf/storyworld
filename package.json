@@ -23,5 +23,9 @@
     "lout": "^9.0.0",
     "nconf": "^0.8.4",
     "vision": "^4.0.1"
+  },
+  "devDependencies": {
+    "code": "^2.1.0",
+    "lab": "^9.0.0"
   }
 }
