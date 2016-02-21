@@ -1,16 +1,9 @@
 var Joi = require('joi');
-var Datastore = require('nedb');
 
 var pluginName = 'account plugin';
 
 exports.register = function (server, options, next) {
-  var store = new Datastore();
-
-  server.decorate('request', 'identity', {
-    find: function(query, cb) {
-      store.find(query, cb);
-    }
-  });
+  server.decorate('request', 'identity', server.app.createDataStore());
 
   server.route({
     method: 'POST',

@@ -1,6 +1,8 @@
+var Path = require('path');
+var Hapi = require('hapi');
+var Datastore = require('nedb');
+
 module.exports = function (options, cb) {
-  var Path = require('path');
-  var Hapi = require('hapi');
 
   var server = new Hapi.Server({
     connections: {
@@ -12,7 +14,15 @@ module.exports = function (options, cb) {
     }
   });
 
-  server.app.name = 'storyworld';
+  server.app.createDataStore = function() {
+    var store = new Datastore();
+
+    return {
+      find: function(query, cb) {
+        store.find(query, cb);
+      }
+    };
+  };
 
   server.connection({
     host: options.host,
