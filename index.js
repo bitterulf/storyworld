@@ -1,5 +1,3 @@
-var Path = require('path');
-var Hapi = require('hapi');
 var nconf = require('nconf');
 
 nconf.argv().env().defaults({
@@ -7,34 +5,19 @@ nconf.argv().env().defaults({
   'port': 80
 });
 
-var server = new Hapi.Server({
-  connections: {
-    routes: {
-      files: {
-        relativeTo: Path.join(__dirname, 'public')
-      }
-    }
-  }
-});
-
-server.connection({
+var options = {
   host: nconf.get('host'),
   port: nconf.get('port')
-});
+};
 
-server.register([require('vision'), require('inert'), { register: require('lout') }], function(err) {
-  server.register([
-    {register: require('./plugins/public.js'), options: {}},
-    {register: require('./plugins/identity.js'), options: {}}
-  ], function(err) {
+require('./server.js')(options, function(err, server) {
+  if (err) {
+    throw err;
+  }
+  server.start(function(err) {
     if (err) {
       throw err;
     }
-    server.start(function(err) {
-      if (err) {
-        throw err;
-      }
-      console.log('Server running at:', server.info.uri);
-    });
+    console.log('Server running at:', server.info.uri);
   });
 });
