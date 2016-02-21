@@ -5,7 +5,7 @@ var pluginName = 'account plugin';
 exports.register = function (server, options, next) {
   server.route({
     method: 'POST',
-    path: '/account',
+    path: '/identity',
     config: {
       tags: [pluginName],
       description: 'route to create a account',

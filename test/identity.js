@@ -12,15 +12,15 @@ server.connection({
 });
 
 server.register([
-  {register: require('../plugins/account.js'), options: {}}
+  {register: require('../plugins/identity.js'), options: {}}
 ], function(err) {
   if (err) {
     throw err;
   }
 
-  lab.experiment('account', function() {
+  lab.experiment('identity', function() {
     lab.test('can be created', function (done) {
-      server.inject({ method: "POST", url: "/account", payload: {
+      server.inject({ method: "POST", url: "/identity", payload: {
         username: 'username', password: 'password', email: 'email@example.com'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
