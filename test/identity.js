@@ -9,6 +9,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
     throw err;
   }
 
+  var sessionIds = [];
+
   lab.experiment('identity', function() {
     lab.test('can be created', function (done) {
       server.inject({ method: "POST", url: "/identity", payload: {
@@ -28,22 +30,53 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         done();
       });
     });
-    lab.test('can get a session id with those credentials wich can be validated', function (done) {
+    lab.test('can get a session id with those credentials', function (done) {
       server.inject({ method: "POST", url: "/identity/session", payload: {
         username: 'username', password: 'password'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result).not.to.equal('invalid identity');
         Code.expect(response.result.length).to.equal(40);
-
-        var sessionId = response.result;
-        server.inject({ method: "POST", url: "/identity/session/test", payload: {
-          sessionId: sessionId
-        }}, function(response) {
-          Code.expect(response.statusCode).to.equal(200);
-          Code.expect(response.result).to.equal('passed');
-          done();
-        });
+        sessionIds.push(response.result);
+        done();
+      });
+    });
+    lab.test('session id can be validated afterwards', function (done) {
+      server.inject({ method: "POST", url: "/identity/session/test", payload: {
+        sessionId: sessionIds[0]
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).to.equal('passed');
+        done();
+      });
+    });
+    lab.test('can get a another session id with those credentials', function (done) {
+      server.inject({ method: "POST", url: "/identity/session", payload: {
+        username: 'username', password: 'password'
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).not.to.equal('invalid identity');
+        Code.expect(response.result.length).to.equal(40);
+        sessionIds.push(response.result);
+        done();
+      });
+    });
+    lab.test('old session id can not be validated afterwards', function (done) {
+      server.inject({ method: "POST", url: "/identity/session/test", payload: {
+        sessionId: sessionIds[0]
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).to.equal('failed');
+        done();
+      });
+    });
+    lab.test('new session id is still valid', function (done) {
+      server.inject({ method: "POST", url: "/identity/session/test", payload: {
+        sessionId: sessionIds[1]
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).to.equal('passed');
+        done();
       });
     });
     lab.test('can get a session id with those credentials', function (done) {
