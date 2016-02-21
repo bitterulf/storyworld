@@ -50,7 +50,7 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
 
           if (result.length) {
-            reply(Boom.wrap(new Error('username already taken')));
+            reply(Boom.conflict('username already taken'));
           }
           else {
             db.insert(data, function(err, result) {
@@ -84,7 +84,7 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
 
           if (!result.length || !passwordHash.verify(data.password, result[0].password)) {
-            reply(Boom.wrap(new Error('invalid identity')));
+            reply(Boom.unauthorized('invalid identity'));
           }
           else {
             var hash = sha1((new Date()).valueOf().toString() + Math.random().toString()).toString();
@@ -108,7 +108,7 @@ exports.register = function (server, options, next) {
       description: 'route to test a session id',
       handler: function (request, reply) {
         if (!request.username) {
-          reply(Boom.wrap(new Error('failed')));
+          reply(Boom.forbidden('failed'));
         }
         else {
           reply('passed');
