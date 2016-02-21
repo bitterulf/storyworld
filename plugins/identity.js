@@ -67,7 +67,11 @@ exports.register = function (server, options, next) {
           }
           else {
             var hash = sha1((new Date()).valueOf().toString() + Math.random().toString()).toString();
-            reply(hash);
+
+            db.update({username: data.username}, {$set:{ sessionId: hash }}, {}, function(err, numReplaced) {
+              if (err) return reply(err);
+              reply(hash);
+            });
           }
         });
       }

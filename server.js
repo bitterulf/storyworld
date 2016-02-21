@@ -23,6 +23,9 @@ module.exports = function (options, cb) {
       },
       insert: function(doc, cb) {
         store.insert(doc, cb);
+      },
+      update: function(query, update, options, cb) {
+        store.update(query, update, options, cb);
       }
     };
   };
