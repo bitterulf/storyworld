@@ -1,4 +1,5 @@
 var Joi = require('joi');
+var passwordHash = require('password-hash');
 
 var pluginName = 'account plugin';
 
@@ -20,6 +21,8 @@ exports.register = function (server, options, next) {
       },
       handler: function (request, reply) {
         var data = request.payload;
+        data.password = passwordHash.generate(data.password);
+
         var db = request.identity;
         db.find({username: data.username}, function(err, result) {
           if (err) return reply(err);

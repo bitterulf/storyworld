@@ -23,6 +23,7 @@
     "lout": "^9.0.0",
     "nconf": "^0.8.4",
     "nedb": "^1.8.0",
+    "password-hash": "^1.2.2",
     "vision": "^4.0.1"
   },
   "devDependencies": {
