@@ -1,5 +1,6 @@
 var Joi = require('joi');
 var passwordHash = require('password-hash');
+var sha1 = require("crypto-js/sha1");
 
 var pluginName = 'account plugin';
 
@@ -65,7 +66,8 @@ exports.register = function (server, options, next) {
             reply('invalid identity');
           }
           else {
-            reply('valid identity');
+            var hash = sha1((new Date()).valueOf().toString() + Math.random().toString()).toString();
+            reply(hash);
           }
         });
       }

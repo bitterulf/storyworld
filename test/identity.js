@@ -33,7 +33,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         username: 'username', password: 'password'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('valid identity');
+        Code.expect(response.result).not.to.equal('invalid identity');
+        Code.expect(response.result.length).to.equal(40);
         done();
       });
     });
