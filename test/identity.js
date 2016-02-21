@@ -79,12 +79,38 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         done();
       });
     });
-    lab.test('can get a session id with those credentials', function (done) {
-      server.inject({ method: "POST", url: "/identity/session", payload: {
-        username: 'username', password: 'wrongPassword'
+    lab.test('correct session id with wrong ip is invalid', function (done) {
+      server.inject({ method: "POST", url: "/identity/session/test",
+        remoteAddress: '127.0.0.2',
+        payload: {
+          sessionId: sessionIds[1]
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('invalid identity');
+        Code.expect(response.result).to.equal('failed');
+        done();
+      });
+    });
+    lab.test('can get a another session id under a different ip', function (done) {
+      server.inject({ method: "POST", url: "/identity/session",
+        remoteAddress: '127.0.0.2',
+        payload: {
+          username: 'username', password: 'password'
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).not.to.equal('invalid identity');
+        Code.expect(response.result.length).to.equal(40);
+        sessionIds.push(response.result);
+        done();
+      });
+    });
+    lab.test('correct session id with new correct ip is valid', function (done) {
+      server.inject({ method: "POST", url: "/identity/session/test",
+        remoteAddress: '127.0.0.2',
+        payload: {
+          sessionId: sessionIds[2]
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).to.equal('passed');
         done();
       });
     });

@@ -67,8 +67,9 @@ exports.register = function (server, options, next) {
           }
           else {
             var hash = sha1((new Date()).valueOf().toString() + Math.random().toString()).toString();
+            var ip = request.info.remoteAddress;
 
-            db.update({username: data.username}, {$set:{ sessionId: hash }}, {}, function(err, numReplaced) {
+            db.update({username: data.username}, {$set:{ ip: ip, sessionId: hash }}, {}, function(err, numReplaced) {
               if (err) return reply(err);
               reply(hash);
             });
@@ -92,8 +93,9 @@ exports.register = function (server, options, next) {
       handler: function (request, reply) {
         var data = request.payload;
         var db = request.identity;
+        var ip = request.info.remoteAddress;
 
-        db.find({sessionId: data.sessionId}, function(err, result) {
+        db.find({ip: ip, sessionId: data.sessionId}, function(err, result) {
           if (err) return reply(err);
 
           if (!result.length) {
