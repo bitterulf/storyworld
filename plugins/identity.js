@@ -5,6 +5,26 @@ var sha1 = require("crypto-js/sha1");
 var pluginName = 'account plugin';
 
 exports.register = function (server, options, next) {
+  server.ext({
+    type: 'onPreHandler',
+    method: function (request, reply) {
+      if (request.payload.sessionId) {
+        var db = request.identity;
+        db.find({ip: request.info.remoteAddress, sessionId: request.payload.sessionId}, function(err, result) {
+          if (err) return reply(err);
+
+          if (result.length) {
+            request.username = result[0].username;
+          }
+          return reply.continue();
+        });
+      }
+      else {
+        return reply.continue();
+      }
+    }
+  });
+
   server.decorate('request', 'identity', server.app.createDataStore());
 
   server.route({
