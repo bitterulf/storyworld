@@ -29,7 +29,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.status).to.equal('error');
         Code.expect(response.result.message).to.equal('username already taken');
-        Code.expect(response.result.code).to.equal(500);
+        Code.expect(response.result.code).to.equal(409);
         done();
       });
     });
@@ -42,6 +42,17 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         Code.expect(response.result.message).not.to.equal('invalid identity');
         Code.expect(response.result.data.length).to.equal(40);
         sessionIds.push(response.result.data);
+        done();
+      });
+    });
+      lab.test('can not get a session id with wrong credentials', function (done) {
+      server.inject({ method: "POST", url: "/identity/session", payload: {
+        username: 'username', password: 'wrongpassword'
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result.status).to.equal('error');
+        Code.expect(response.result.message).to.equal('invalid identity');
+        Code.expect(response.result.code).to.equal(401);
         done();
       });
     });
@@ -74,7 +85,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.status).to.equal('error');
         Code.expect(response.result.message).to.equal('failed');
-        Code.expect(response.result.code).to.equal(500);
+        Code.expect(response.result.code).to.equal(403);
         done();
       });
     });
@@ -97,7 +108,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.status).to.equal('error');
         Code.expect(response.result.message).to.equal('failed');
-        Code.expect(response.result.code).to.equal(500);
+        Code.expect(response.result.code).to.equal(403);
         done();
       });
     });

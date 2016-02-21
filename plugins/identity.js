@@ -50,7 +50,7 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
 
           if (result.length) {
-            reply(Boom.conflict('username already taken'));
+             reply(Boom.conflict('username already taken'));
           }
           else {
             db.insert(data, function(err, result) {
