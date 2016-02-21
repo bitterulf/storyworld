@@ -42,6 +42,36 @@ exports.register = function (server, options, next) {
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/identity/session',
+    config: {
+      tags: [pluginName],
+      description: 'route to retrieve a session id for an identity',
+      validate: {
+        payload: Joi.object().keys({
+          username: Joi.string().regex(/^[a-zA-Z0-9_\-]{5,30}$/).required(),
+          password: Joi.string().regex(/^[a-zA-Z0-9!$%&?*;:_\-.,#+|@=]{5,30}$/).required()
+        })
+      },
+      handler: function (request, reply) {
+        var data = request.payload;
+        var db = request.identity;
+
+        db.find({username: data.username}, function(err, result) {
+          if (err) return reply(err);
+
+          if (!result.length || !passwordHash.verify(data.password, result[0].password)) {
+            reply('invalid identity');
+          }
+          else {
+            reply('valid identity');
+          }
+        });
+      }
+    }
+  });
+
   next();
 };
 

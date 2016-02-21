@@ -28,5 +28,23 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         done();
       });
     });
+    lab.test('can get a session id with those credentials', function (done) {
+      server.inject({ method: "POST", url: "/identity/session", payload: {
+        username: 'username', password: 'password'
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).to.equal('valid identity');
+        done();
+      });
+    });
+    lab.test('can get a session id with those credentials', function (done) {
+      server.inject({ method: "POST", url: "/identity/session", payload: {
+        username: 'username', password: 'wrongPassword'
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).to.equal('invalid identity');
+        done();
+      });
+    });
   });
 });
