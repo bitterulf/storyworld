@@ -20,6 +20,9 @@ module.exports = function (options, cb) {
     return {
       find: function(query, cb) {
         store.find(query, cb);
+      },
+      insert: function(doc, cb) {
+        store.insert(doc, cb);
       }
     };
   };

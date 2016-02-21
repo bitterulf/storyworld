@@ -15,7 +15,16 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         username: 'username', password: 'password', email: 'email@example.com'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('not implemented yet');
+        Code.expect(response.result).to.equal('identity created');
+        done();
+      });
+    });
+    lab.test('can only be created once with the same username', function (done) {
+      server.inject({ method: "POST", url: "/identity", payload: {
+        username: 'username', password: 'password', email: 'email@example.com'
+      }}, function(response) {
+        Code.expect(response.statusCode).to.equal(200);
+        Code.expect(response.result).to.equal('username already taken');
         done();
       });
     });

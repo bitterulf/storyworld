@@ -19,8 +19,21 @@ exports.register = function (server, options, next) {
         })
       },
       handler: function (request, reply) {
-        request.identity.find({}, function(err, result) {
-          reply(result);
+        var data = request.payload;
+        var db = request.identity;
+        db.find({username: data.username}, function(err, result) {
+          if (err) return reply(err);
+
+          if (result.length) {
+            reply('username already taken');
+          }
+          else {
+            db.insert(data, function(err, result) {
+              if (err) return reply(err);
+
+              reply('identity created');
+            });
+          }
         });
       }
     }
