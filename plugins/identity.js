@@ -1,8 +1,17 @@
 var Joi = require('joi');
+var Datastore = require('nedb');
 
 var pluginName = 'account plugin';
 
 exports.register = function (server, options, next) {
+  var store = new Datastore();
+
+  server.decorate('request', 'identity', {
+    find: function(query, cb) {
+      store.find(query, cb);
+    }
+  });
+
   server.route({
     method: 'POST',
     path: '/identity',
@@ -17,7 +26,9 @@ exports.register = function (server, options, next) {
         })
       },
       handler: function (request, reply) {
-        return reply('not implemented yet');
+        request.identity.find({}, function(err, result) {
+          reply(result);
+        });
       }
     }
   });
