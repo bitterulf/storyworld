@@ -12,6 +12,8 @@ module.exports = function (options, cb) {
     }
   });
 
+  server.app.name = 'storyworld';
+
   server.connection({
     host: options.host,
     port: options.port
