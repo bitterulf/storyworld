@@ -28,14 +28,22 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         done();
       });
     });
-    lab.test('can get a session id with those credentials', function (done) {
+    lab.test('can get a session id with those credentials wich can be validated', function (done) {
       server.inject({ method: "POST", url: "/identity/session", payload: {
         username: 'username', password: 'password'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result).not.to.equal('invalid identity');
         Code.expect(response.result.length).to.equal(40);
-        done();
+
+        var sessionId = response.result;
+        server.inject({ method: "POST", url: "/identity/session/test", payload: {
+          sessionId: sessionId
+        }}, function(response) {
+          Code.expect(response.statusCode).to.equal(200);
+          Code.expect(response.result).to.equal('passed');
+          done();
+        });
       });
     });
     lab.test('can get a session id with those credentials', function (done) {

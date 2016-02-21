@@ -78,6 +78,35 @@ exports.register = function (server, options, next) {
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/identity/session/test',
+    config: {
+      tags: [pluginName],
+      description: 'route to test a session id',
+      validate: {
+        payload: Joi.object().keys({
+          sessionId: Joi.string().min(40).max(40).required()
+        })
+      },
+      handler: function (request, reply) {
+        var data = request.payload;
+        var db = request.identity;
+
+        db.find({sessionId: data.sessionId}, function(err, result) {
+          if (err) return reply(err);
+
+          if (!result.length) {
+            reply('failed');
+          }
+          else {
+            reply('passed');
+          }
+        });
+      }
+    }
+  });
+
   next();
 };
 
