@@ -105,26 +105,13 @@ exports.register = function (server, options, next) {
     config: {
       tags: [pluginName],
       description: 'route to test a session id',
-      validate: {
-        payload: Joi.object().keys({
-          sessionId: Joi.string().min(40).max(40).required()
-        })
-      },
       handler: function (request, reply) {
-        var data = request.payload;
-        var db = request.identity;
-        var ip = request.info.remoteAddress;
-
-        db.find({ip: ip, sessionId: data.sessionId}, function(err, result) {
-          if (err) return reply(err);
-
-          if (!result.length) {
-            reply('failed');
-          }
-          else {
-            reply('passed');
-          }
-        });
+        if (!request.username) {
+          reply('failed');
+        }
+        else {
+          reply('passed');
+        }
       }
     }
   });
