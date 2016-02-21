@@ -1,4 +1,5 @@
 var Joi = require('joi');
+var Boom = require('boom');
 var passwordHash = require('password-hash');
 var sha1 = require("crypto-js/sha1");
 
@@ -8,7 +9,7 @@ exports.register = function (server, options, next) {
   server.ext({
     type: 'onPreHandler',
     method: function (request, reply) {
-      if (request.payload.sessionId) {
+      if (request.payload && request.payload.sessionId) {
         var db = request.identity;
         db.find({ip: request.info.remoteAddress, sessionId: request.payload.sessionId}, function(err, result) {
           if (err) return reply(err);
@@ -49,7 +50,7 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
 
           if (result.length) {
-            reply('username already taken');
+            reply(Boom.wrap(new Error('username already taken')));
           }
           else {
             db.insert(data, function(err, result) {
@@ -83,7 +84,7 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
 
           if (!result.length || !passwordHash.verify(data.password, result[0].password)) {
-            reply('invalid identity');
+            reply(Boom.wrap(new Error('invalid identity')));
           }
           else {
             var hash = sha1((new Date()).valueOf().toString() + Math.random().toString()).toString();
@@ -107,7 +108,7 @@ exports.register = function (server, options, next) {
       description: 'route to test a session id',
       handler: function (request, reply) {
         if (!request.username) {
-          reply('failed');
+          reply(Boom.wrap(new Error('failed')));
         }
         else {
           reply('passed');

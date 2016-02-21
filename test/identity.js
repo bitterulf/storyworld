@@ -17,7 +17,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         username: 'username', password: 'password', email: 'email@example.com'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('identity created');
+        Code.expect(response.result.status).to.equal('success');
+        Code.expect(response.result.data).to.equal('identity created');
         done();
       });
     });
@@ -26,7 +27,9 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         username: 'username', password: 'password', email: 'email@example.com'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('username already taken');
+        Code.expect(response.result.status).to.equal('error');
+        Code.expect(response.result.message).to.equal('username already taken');
+        Code.expect(response.result.code).to.equal(500);
         done();
       });
     });
@@ -35,9 +38,10 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         username: 'username', password: 'password'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).not.to.equal('invalid identity');
-        Code.expect(response.result.length).to.equal(40);
-        sessionIds.push(response.result);
+        Code.expect(response.result.status).to.equal('success');
+        Code.expect(response.result.message).not.to.equal('invalid identity');
+        Code.expect(response.result.data.length).to.equal(40);
+        sessionIds.push(response.result.data);
         done();
       });
     });
@@ -46,7 +50,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         sessionId: sessionIds[0]
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('passed');
+        Code.expect(response.result.status).to.equal('success');
+        Code.expect(response.result.data).to.equal('passed');
         done();
       });
     });
@@ -55,9 +60,10 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         username: 'username', password: 'password'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).not.to.equal('invalid identity');
-        Code.expect(response.result.length).to.equal(40);
-        sessionIds.push(response.result);
+        Code.expect(response.result.status).to.equal('success');
+        Code.expect(response.result.message).not.to.equal('invalid identity');
+        Code.expect(response.result.data.length).to.equal(40);
+        sessionIds.push(response.result.data);
         done();
       });
     });
@@ -66,7 +72,9 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         sessionId: sessionIds[0]
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('failed');
+        Code.expect(response.result.status).to.equal('error');
+        Code.expect(response.result.message).to.equal('failed');
+        Code.expect(response.result.code).to.equal(500);
         done();
       });
     });
@@ -75,7 +83,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         sessionId: sessionIds[1]
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('passed');
+        Code.expect(response.result.status).to.equal('success');
+        Code.expect(response.result.data).to.equal('passed');
         done();
       });
     });
@@ -86,7 +95,9 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           sessionId: sessionIds[1]
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('failed');
+        Code.expect(response.result.status).to.equal('error');
+        Code.expect(response.result.message).to.equal('failed');
+        Code.expect(response.result.code).to.equal(500);
         done();
       });
     });
@@ -97,9 +108,10 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           username: 'username', password: 'password'
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).not.to.equal('invalid identity');
-        Code.expect(response.result.length).to.equal(40);
-        sessionIds.push(response.result);
+        Code.expect(response.result.status).to.equal('success');
+        Code.expect(response.result.message).not.to.equal('invalid identity');
+        Code.expect(response.result.data.length).to.equal(40);
+        sessionIds.push(response.result.data);
         done();
       });
     });
@@ -110,7 +122,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           sessionId: sessionIds[2]
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result).to.equal('passed');
+        Code.expect(response.result.status).to.equal('success');
+        Code.expect(response.result.data).to.equal('passed');
         done();
       });
     });

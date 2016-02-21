@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/bitterulf/storyworld#readme",
   "dependencies": {
+    "boom": "^3.1.2",
     "crypto-js": "^3.1.6",
     "hapi": "^13.0.0",
     "inert": "^3.2.0",
