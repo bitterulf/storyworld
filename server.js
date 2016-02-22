@@ -39,7 +39,8 @@ module.exports = function (options, cb) {
     server.register([
       {register: require('./plugins/public.js'), options: {}},
       {register: require('./plugins/jsend.js'), options: {}},
-      {register: require('./plugins/identity.js'), options: {}}
+      {register: require('./plugins/identity.js'), options: {}},
+      {register: require('./plugins/story.js'), options: {}}
     ], function(err) {
       cb(err, server);
     });
