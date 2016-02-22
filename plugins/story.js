@@ -14,7 +14,7 @@ exports.register = function (server, options, next) {
     path: '/story',
     config: {
       tags: [pluginName],
-      description: 'route to create a account',
+      description: 'route to create a story',
       validate: {
         payload: Joi.object().keys({
           sessionId: Joi.string().required(),
@@ -26,10 +26,33 @@ exports.register = function (server, options, next) {
         var db = request.story;
 
         data.id = shortid.generate();
+        data.username = request.username;
 
         db.insert(data, function(err, doc) {
           if (err) return reply(err);
           reply(doc.id);
+        });
+      }
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/stories',
+    config: {
+      tags: [pluginName],
+      description: 'route to retrieve all stories',
+      validate: {
+        query: {
+          sessionId: Joi.string().required()
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.story;
+
+        db.find({}, function(err, docs) {
+          if (err) return reply(err);
+          reply(docs);
         });
       }
     }

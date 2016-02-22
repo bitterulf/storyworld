@@ -55,7 +55,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       });
     });
     lab.test('can be created with a valid session id', function (done) {
-      createSessionId(server, function(err, sessionId) {
+      createSessionId(server, function(err, sid) {
+        sessionId = sid;
         server.inject({ method: "POST", url: "/story", payload: {
           sessionId: sessionId,
           name: 'first story'
@@ -64,6 +65,19 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           Code.expect(response.result.data.length).to.equal(9);
           done();
         });
+      });
+    });
+    lab.test('can retrieve the created stories', function (done) {
+      server.inject({ method: "GET", url: "/stories?sessionId="+sessionId}, function(response) {
+        expectSuccessResponse(response);
+        Code.expect(response.result.data.length).to.equal(1);
+
+        var storyData = response.result.data[0];
+
+        Code.expect(storyData.name).to.equal('first story');
+        Code.expect(storyData.username).to.equal('username');
+        Code.expect(storyData.id.length).to.equal(9);
+        done();
       });
     });
   });
