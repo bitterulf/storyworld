@@ -27,6 +27,7 @@ exports.register = function (server, options, next) {
 
         data.id = shortid.generate();
         data.username = request.username;
+        data.actions = {};
 
         db.insert(data, function(err, doc) {
           if (err) return reply(err);
@@ -53,6 +54,46 @@ exports.register = function (server, options, next) {
         db.find({}, function(err, docs) {
           if (err) return reply(err);
           reply(docs);
+        });
+      }
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/story/{storyId}/action',
+    config: {
+      tags: [pluginName],
+      description: 'route to add another action to a story',
+      validate: {
+        payload: {
+          sessionId: Joi.string().required(),
+          name: Joi.string().required()
+        },
+        params: {
+          storyId: Joi.string().min(9).max(9)
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.story;
+        var query = {username: request.username, id: request.params.storyId};
+
+        db.find(query, function(err, docs) {
+          if (err) return reply(err);
+
+          if (docs.length) {
+            var actionId = shortid.generate();
+            var setData = {};
+            setData['actions.'+actionId] = { name: request.payload.name };
+
+            db.update(query, { $set: setData }, {}, function (err, numReplaced) {
+              if (err) return reply(err);
+              reply(actionId);
+            });
+          }
+          else {
+            reply(Boom.notFound('story does not exists'));
+          }
         });
       }
     }

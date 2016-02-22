@@ -1,6 +1,7 @@
 var Code = require('code');
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
+var _ = require('underscore');
 
 var expectSuccessResponse = function(response, data) {
   Code.expect(response.statusCode).to.equal(200);
@@ -35,6 +36,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
   }
 
   var sessionId;
+  var storyId;
 
   lab.experiment('story', function() {
     lab.test('can not be created without a session id', function (done) {
@@ -63,6 +65,20 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         }}, function(response) {
           expectSuccessResponse(response);
           Code.expect(response.result.data.length).to.equal(9);
+          storyId = response.result.data;
+          done();
+        });
+      });
+    });
+    lab.test('can have actions to be created into', function (done) {
+      createSessionId(server, function(err, sid) {
+        sessionId = sid;
+        server.inject({ method: "POST", url: "/story/"+storyId+"/action", payload: {
+          sessionId: sessionId,
+          name: 'first action'
+        }}, function(response) {
+          expectSuccessResponse(response);
+          Code.expect(response.result.data.length).to.equal(10);
           done();
         });
       });
@@ -77,6 +93,9 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         Code.expect(storyData.name).to.equal('first story');
         Code.expect(storyData.username).to.equal('username');
         Code.expect(storyData.id.length).to.equal(9);
+        var actionIds = _.keys(storyData.actions);
+        Code.expect(actionIds.length).to.equal(1);
+        Code.expect(storyData.actions[actionIds[0]].name).to.equal('first action');
         done();
       });
     });
