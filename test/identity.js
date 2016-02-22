@@ -84,8 +84,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.status).to.equal('error');
-        Code.expect(response.result.message).to.equal('failed');
-        Code.expect(response.result.code).to.equal(403);
+        Code.expect(response.result.message).to.equal('invalid identity');
+        Code.expect(response.result.code).to.equal(401);
         done();
       });
     });
@@ -107,8 +107,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       }}, function(response) {
         Code.expect(response.statusCode).to.equal(200);
         Code.expect(response.result.status).to.equal('error');
-        Code.expect(response.result.message).to.equal('failed');
-        Code.expect(response.result.code).to.equal(403);
+        Code.expect(response.result.message).to.equal('invalid identity');
+        Code.expect(response.result.code).to.equal(401);
         done();
       });
     });

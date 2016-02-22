@@ -14,7 +14,10 @@ exports.register = function (server, options, next) {
         db.find({ip: request.info.remoteAddress, sessionId: request.payload.sessionId}, function(err, result) {
           if (err) return reply(err);
 
-          if (result.length) {
+          if (!result.length) {
+            return reply(Boom.unauthorized('invalid identity'));
+          }
+          else {
             request.username = result[0].username;
           }
           return reply.continue();
