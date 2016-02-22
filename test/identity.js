@@ -4,6 +4,21 @@ var Code = require('code');
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
 
+var expectSuccessResponse = function(response, data) {
+  Code.expect(response.statusCode).to.equal(200);
+  Code.expect(response.result.status).to.equal('success');
+  if (data) {
+    Code.expect(response.result.data).to.equal(data);
+  }
+};
+
+var expectErrorResponse = function(response, statusCode, message) {
+  Code.expect(response.statusCode).to.equal(200);
+  Code.expect(response.result.status).to.equal('error');
+  Code.expect(response.result.code).to.equal(statusCode);
+  Code.expect(response.result.message).to.equal(message);
+};
+
 require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
   if (err) {
     throw err;
@@ -16,9 +31,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity", payload: {
         username: 'username', password: 'password', email: 'email@example.com'
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('success');
-        Code.expect(response.result.data).to.equal('identity created');
+        expectSuccessResponse(response, 'identity created');
         done();
       });
     });
@@ -26,10 +39,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity", payload: {
         username: 'username', password: 'password', email: 'email@example.com'
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('error');
-        Code.expect(response.result.message).to.equal('username already taken');
-        Code.expect(response.result.code).to.equal(409);
+        expectErrorResponse(response, 409, 'username already taken');
         done();
       });
     });
@@ -37,9 +47,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity/session", payload: {
         username: 'username', password: 'password'
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('success');
-        Code.expect(response.result.message).not.to.equal('invalid identity');
+        expectSuccessResponse(response);
         Code.expect(response.result.data.length).to.equal(40);
         sessionIds.push(response.result.data);
         done();
@@ -49,10 +57,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity/session", payload: {
         username: 'username', password: 'wrongpassword'
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('error');
-        Code.expect(response.result.message).to.equal('invalid identity');
-        Code.expect(response.result.code).to.equal(401);
+        expectErrorResponse(response, 401, 'invalid identity');
         done();
       });
     });
@@ -60,9 +65,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity/session/test", payload: {
         sessionId: sessionIds[0]
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('success');
-        Code.expect(response.result.data).to.equal('passed');
+        expectSuccessResponse(response, 'passed');
         done();
       });
     });
@@ -70,9 +73,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity/session", payload: {
         username: 'username', password: 'password'
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('success');
-        Code.expect(response.result.message).not.to.equal('invalid identity');
+        expectSuccessResponse(response);
         Code.expect(response.result.data.length).to.equal(40);
         sessionIds.push(response.result.data);
         done();
@@ -82,10 +83,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity/session/test", payload: {
         sessionId: sessionIds[0]
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('error');
-        Code.expect(response.result.message).to.equal('invalid identity');
-        Code.expect(response.result.code).to.equal(401);
+        expectErrorResponse(response, 401, 'invalid identity');
         done();
       });
     });
@@ -93,9 +91,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "POST", url: "/identity/session/test", payload: {
         sessionId: sessionIds[1]
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('success');
-        Code.expect(response.result.data).to.equal('passed');
+        expectSuccessResponse(response, 'passed');
         done();
       });
     });
@@ -105,10 +101,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         payload: {
           sessionId: sessionIds[1]
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('error');
-        Code.expect(response.result.message).to.equal('invalid identity');
-        Code.expect(response.result.code).to.equal(401);
+        expectErrorResponse(response, 401, 'invalid identity');
         done();
       });
     });
@@ -118,9 +111,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         payload: {
           username: 'username', password: 'password'
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('success');
-        Code.expect(response.result.message).not.to.equal('invalid identity');
+        expectSuccessResponse(response);
         Code.expect(response.result.data.length).to.equal(40);
         sessionIds.push(response.result.data);
         done();
@@ -132,9 +123,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         payload: {
           sessionId: sessionIds[2]
       }}, function(response) {
-        Code.expect(response.statusCode).to.equal(200);
-        Code.expect(response.result.status).to.equal('success');
-        Code.expect(response.result.data).to.equal('passed');
+        expectSuccessResponse(response, 'passed');
         done();
       });
     });
