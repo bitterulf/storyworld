@@ -3,7 +3,7 @@ var Boom = require('boom');
 var passwordHash = require('password-hash');
 var sha1 = require("crypto-js/sha1");
 
-var pluginName = 'account plugin';
+var pluginName = 'identity plugin';
 
 exports.register = function (server, options, next) {
   server.ext({
