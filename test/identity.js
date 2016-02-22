@@ -1,5 +1,3 @@
-var Hapi = require('hapi');
-
 var Code = require('code');
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
