@@ -9,9 +9,18 @@ exports.register = function (server, options, next) {
   server.ext({
     type: 'onPreHandler',
     method: function (request, reply) {
+      var sessionContainer;
+
       if (request.payload && request.payload.sessionId) {
+        sessionContainer = 'payload';
+      }
+      else if (request.query && request.query.sessionId) {
+        sessionContainer = 'query';
+      }
+
+      if (sessionContainer) {
         var db = request.identity;
-        db.find({ip: request.info.remoteAddress, sessionId: request.payload.sessionId}, function(err, result) {
+        db.find({ip: request.info.remoteAddress, sessionId: request[sessionContainer].sessionId}, function(err, result) {
           if (err) return reply(err);
 
           if (!result.length) {
