@@ -1,0 +1,4 @@
+digraph G {
+ hello -> world -> app
+ db -> world -> db -> app
+}
