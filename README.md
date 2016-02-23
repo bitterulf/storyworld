@@ -6,6 +6,7 @@ server application to create and explore stories
   - [structure development](#structure-development)
   - [server component](#server-component)
   - [web client](#web-client)
+- [F.A.Q.](#faq)
 
 ## vision
 The big picture for this project is to define a structure for interactive storytelling and to provide infrastructure to improve those stories while they are already published.
