@@ -1,0 +1,7 @@
+digraph G {
+ identity -> story -> attributeProvider
+ story -> actionProvider
+ identity -> storyInstance
+ story -> storyInstance
+ storyInstance -> actionCommits
+}
