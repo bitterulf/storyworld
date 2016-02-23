@@ -1,10 +1,8 @@
 # storyworld
 server application to create and explore stories
 
-<!-- toc -->
 - [vision](#vision)
 - [roadmap](#roadmap)
-<!-- tocstop -->
 
 ## vision
 
@@ -12,8 +10,8 @@ server application to create and explore stories
 
 ## F.A.Q.
 
-**Q** how
+**Q** How do I install this project?
 
-**A** do this
+**A** Install node, pull this repository, run `npm install` and start everything with `node .`
 
 ---
