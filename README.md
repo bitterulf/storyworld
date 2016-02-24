@@ -23,6 +23,7 @@ The last step is to create a easy to use web client so users can start to create
 ## structure
 - [identity](#identity)
 - [story](#story)
+ - [result](#result)
  - [provider](#provider)
    - [action](#action)
    - [content](#content)
@@ -33,6 +34,8 @@ The last step is to create a easy to use web client so users can start to create
 The identity is what the user logins with. Consits of username, email and password. In the final product users will also be able to create identities out of exisiting facebook or twitter logins.
 ### story
 The main element the user can create with his identity. Stories can be created by any identity.
+#### result
+A result is functionality wich loops trough the events of a story instance and aggregate the data into a final result wich may trigger a provider to play out content or next actions.
 #### provider
 A provider consists of logic that plays out next possible actions the user can do in the story as well as trigger content.
 ##### action
