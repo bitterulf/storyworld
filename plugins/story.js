@@ -71,7 +71,7 @@ exports.register = function (server, options, next) {
           name: Joi.string().required()
         },
         params: {
-          storyId: Joi.string().min(9).max(9)
+          storyId: Joi.string().min(7).max(14)
         }
       },
       handler: function (request, reply) {
@@ -111,8 +111,8 @@ exports.register = function (server, options, next) {
           name: Joi.string().required()
         },
         params: {
-          storyId: Joi.string().min(9).max(9),
-          providerId: Joi.string().min(3).max(10)
+          storyId: Joi.string().min(7).max(14),
+          providerId: Joi.string().min(7).max(14)
         }
       },
       handler: function (request, reply) {
