@@ -6,6 +6,11 @@ var shortid = require('shortid');
 
 var pluginName = 'story plugin';
 
+var generateId = function() {
+  var id = String("00000000000000" + shortid.generate()).slice(-14);
+  return id;
+};
+
 exports.register = function (server, options, next) {
   server.decorate('request', 'story', server.app.createDataStore());
 
@@ -25,7 +30,7 @@ exports.register = function (server, options, next) {
         var data = request.payload;
         var db = request.story;
 
-        data.id = shortid.generate();
+        data.id = generateId();
         data.username = request.username;
         data.provider = {};
 
@@ -82,7 +87,7 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
 
           if (docs.length) {
-            var providerId = shortid.generate();
+            var providerId = generateId();
             var setData = {};
             setData['provider.'+providerId] = { name: request.payload.name, actions: {}, contents: {} };
 
@@ -126,7 +131,7 @@ exports.register = function (server, options, next) {
             if (!docs[0].provider[request.params.providerId]) {
               return reply(Boom.notFound('provider does not exists'));
             }
-            var actionId = shortid.generate();
+            var actionId = generateId();
             var setData = {};
             setData['provider.'+request.params.providerId+'.actions.'+actionId] = { name: request.payload.name, events: {} };
 
@@ -170,7 +175,7 @@ exports.register = function (server, options, next) {
             if (!docs[0].provider[request.params.providerId]) {
               return reply(Boom.notFound('provider does not exists'));
             }
-            var contentId = shortid.generate();
+            var contentId = generateId();
             var setData = {};
             setData['provider.'+request.params.providerId+'.contents.'+contentId] = { name: request.payload.name, events: {} };
 
@@ -218,7 +223,7 @@ exports.register = function (server, options, next) {
             if (!docs[0].provider[request.params.providerId].actions[request.params.actionId]) {
               return reply(Boom.notFound('action does not exists'));
             }
-            var eventId = shortid.generate();
+            var eventId = generateId();
             var setData = {};
             setData['provider.'+request.params.providerId+'.actions.'+request.params.actionId+'.events.'+eventId] = { name: request.payload.name };
 

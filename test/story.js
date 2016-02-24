@@ -4,34 +4,40 @@ var lab = exports.lab = Lab.script();
 var _ = require('underscore');
 
 var createStoryFromData = function(data) {
-  var Story = function(data) {
+  var Story = function(id, data) {
+    this.id = id;
     this.data = data;
   };
 
-  var Result = function(data) {
+  var Result = function(id, data) {
+    this.id = id;
     this.data = data;
   };
 
-  var Action = function(data) {
+  var Action = function(id, data) {
+    this.id = id;
     this.data = data;
   };
 
-  var Content = function(data) {
+  var Content = function(id, data) {
+    this.id = id;
     this.data = data;
   };
 
-  var Provider = function(data) {
+  var Provider = function(id, data) {
+    this.id = id;
     this.data = data;
   };
 
-  var Event = function(data) {
+  var Event = function(id, data) {
+    this.id = id;
     this.data = data;
   };
 
   Action.prototype.getEventByIndex = function(index) {
     var eventKeys = _.keys(this.data.events);
     if (eventKeys.length >= index + 1) {
-      return new Event(this.data.events[eventKeys[index]]);
+      return new Event(eventKeys[index], this.data.events[eventKeys[index]]);
     }
     return null;
   };
@@ -39,7 +45,7 @@ var createStoryFromData = function(data) {
   Provider.prototype.getActionByIndex = function(index) {
     var actionKeys = _.keys(this.data.actions);
     if (actionKeys.length >= index + 1) {
-      return new Action(this.data.actions[actionKeys[index]]);
+      return new Action(actionKeys[index], this.data.actions[actionKeys[index]]);
     }
     return null;
   };
@@ -47,7 +53,7 @@ var createStoryFromData = function(data) {
   Provider.prototype.getContentByIndex = function(index) {
     var contentKeys = _.keys(this.data.contents);
     if (contentKeys.length >= index + 1) {
-      return new Content(this.data.contents[contentKeys[index]]);
+      return new Content(contentKeys[index], this.data.contents[contentKeys[index]]);
     }
     return null;
   };
@@ -55,7 +61,7 @@ var createStoryFromData = function(data) {
   Story.prototype.getResultByIndex = function(index) {
     var resultKeys = _.keys(this.data.results);
     if (resultKeys.length >= index + 1) {
-      return new Result(this.data.results[resultKeys[index]]);
+      return new Result(resultKeys[index], this.data.results[resultKeys[index]]);
     }
     return null;
   };
@@ -63,12 +69,12 @@ var createStoryFromData = function(data) {
   Story.prototype.getProviderByIndex = function(index) {
     var providerKeys = _.keys(this.data.provider);
     if (providerKeys.length >= index + 1) {
-      return new Provider(this.data.provider[providerKeys[index]]);
+      return new Provider(providerKeys[index], this.data.provider[providerKeys[index]]);
     }
     return null;
   };
 
-  return new Story(data);
+  return new Story(data.id, data);
 };
 
 var expectSuccessResponse = function(response, data) {
@@ -135,7 +141,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first story'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(9);
+          Code.expect(response.result.data.length).to.equal(14);
           storyId = response.result.data;
           done();
         });
@@ -149,7 +155,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first provider'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(10);
+          Code.expect(response.result.data.length).to.equal(14);
           providerId = response.result.data;
           done();
         });
@@ -163,7 +169,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first action'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(10);
+          Code.expect(response.result.data.length).to.equal(14);
           actionId = response.result.data;
           done();
         });
@@ -177,7 +183,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first content'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(10);
+          Code.expect(response.result.data.length).to.equal(14);
           contentId = response.result.data;
           done();
         });
@@ -191,7 +197,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first event'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(10);
+          Code.expect(response.result.data.length).to.equal(14);
           done();
         });
       });
@@ -208,10 +214,15 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
 
         Code.expect(story.data.name).to.equal('first story');
         Code.expect(story.data.username).to.equal('username');
+        Code.expect(story.id.length).to.equal(14);
         Code.expect(provider.data.name).to.equal('first provider');
+        Code.expect(provider.id.length).to.equal(14);
         Code.expect(content.data.name).to.equal('first content');
+        Code.expect(content.id.length).to.equal(14);
         Code.expect(action.data.name).to.equal('first action');
+        Code.expect(action.id.length).to.equal(14);
         Code.expect(event.data.name).to.equal('first event');
+        Code.expect(event.id.length).to.equal(14);
         done();
       });
     });
