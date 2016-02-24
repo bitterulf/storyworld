@@ -3,6 +3,74 @@ var Lab = require('lab');
 var lab = exports.lab = Lab.script();
 var _ = require('underscore');
 
+var createStoryFromData = function(data) {
+  var Story = function(data) {
+    this.data = data;
+  };
+
+  var Result = function(data) {
+    this.data = data;
+  };
+
+  var Action = function(data) {
+    this.data = data;
+  };
+
+  var Content = function(data) {
+    this.data = data;
+  };
+
+  var Provider = function(data) {
+    this.data = data;
+  };
+
+  var Event = function(data) {
+    this.data = data;
+  };
+
+  Action.prototype.getEventByIndex = function(index) {
+    var eventKeys = _.keys(this.data.events);
+    if (eventKeys.length >= index + 1) {
+      return new Event(this.data.events[eventKeys[index]]);
+    }
+    return null;
+  };
+
+  Provider.prototype.getActionByIndex = function(index) {
+    var actionKeys = _.keys(this.data.actions);
+    if (actionKeys.length >= index + 1) {
+      return new Action(this.data.actions[actionKeys[index]]);
+    }
+    return null;
+  };
+
+  Provider.prototype.getContentByIndex = function(index) {
+    var contentKeys = _.keys(this.data.contents);
+    if (contentKeys.length >= index + 1) {
+      return new Content(this.data.contents[contentKeys[index]]);
+    }
+    return null;
+  };
+
+  Story.prototype.getResultByIndex = function(index) {
+    var resultKeys = _.keys(this.data.results);
+    if (resultKeys.length >= index + 1) {
+      return new Result(this.data.results[resultKeys[index]]);
+    }
+    return null;
+  };
+
+  Story.prototype.getProviderByIndex = function(index) {
+    var providerKeys = _.keys(this.data.provider);
+    if (providerKeys.length >= index + 1) {
+      return new Provider(this.data.provider[providerKeys[index]]);
+    }
+    return null;
+  };
+
+  return new Story(data);
+};
+
 var expectSuccessResponse = function(response, data) {
   Code.expect(response.statusCode).to.equal(200);
   Code.expect(response.result.status).to.equal('success');
@@ -130,23 +198,20 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
     });
     lab.test('can retrieve the created stories', function (done) {
       server.inject({ method: "GET", url: "/stories?sessionId="+sessionId}, function(response) {
-        expectSuccessResponse(response);
-        Code.expect(response.result.data.length).to.equal(1);
+        expectSuccessResponse(response);;
 
-        var storyData = response.result.data[0];
+        var story = createStoryFromData(response.result.data[0]);
+        var provider = story.getProviderByIndex(0);
+        var content = provider.getContentByIndex(0);
+        var action = provider.getActionByIndex(0);
+        var event = action.getEventByIndex(0);
 
-        Code.expect(storyData.name).to.equal('first story');
-        Code.expect(storyData.username).to.equal('username');
-        Code.expect(storyData.id.length).to.equal(9);
-        var providerIds = _.keys(storyData.provider);
-        Code.expect(providerIds.length).to.equal(1);
-        Code.expect(storyData.provider[providerIds[0]].name).to.equal('first provider');
-        var contentIds = _.keys(storyData.provider[providerIds[0]].contents);
-        Code.expect(storyData.provider[providerIds[0]].contents[contentIds[0]].name).to.equal('first content');
-        var actionIds = _.keys(storyData.provider[providerIds[0]].actions);
-        Code.expect(storyData.provider[providerIds[0]].actions[actionIds[0]].name).to.equal('first action');
-        var eventIds = _.keys(storyData.provider[providerIds[0]].actions[actionIds[0]].events);
-        Code.expect(storyData.provider[providerIds[0]].actions[actionIds[0]].events[eventIds[0]].name).to.equal('first event');
+        Code.expect(story.data.name).to.equal('first story');
+        Code.expect(story.data.username).to.equal('username');
+        Code.expect(provider.data.name).to.equal('first provider');
+        Code.expect(content.data.name).to.equal('first content');
+        Code.expect(action.data.name).to.equal('first action');
+        Code.expect(event.data.name).to.equal('first event');
         done();
       });
     });
