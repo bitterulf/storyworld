@@ -33,6 +33,7 @@ exports.register = function (server, options, next) {
         data.id = generateId();
         data.username = request.username;
         data.provider = {};
+        data.results = {};
 
         db.insert(data, function(err, doc) {
           if (err) return reply(err);
@@ -59,6 +60,46 @@ exports.register = function (server, options, next) {
         db.find({}, function(err, docs) {
           if (err) return reply(err);
           reply(docs);
+        });
+      }
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/story/{storyId}/result',
+    config: {
+      tags: [pluginName],
+      description: 'route to add another result to a story',
+      validate: {
+        payload: {
+          sessionId: Joi.string().required(),
+          name: Joi.string().required()
+        },
+        params: {
+          storyId: Joi.string().min(7).max(14)
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.story;
+        var query = {username: request.username, id: request.params.storyId};
+
+        db.find(query, function(err, docs) {
+          if (err) return reply(err);
+
+          if (docs.length) {
+            var resultId = generateId();
+            var setData = {};
+            setData['results.'+resultId] = { name: request.payload.name };
+
+            db.update(query, { $set: setData }, {}, function (err, numReplaced) {
+              if (err) return reply(err);
+              reply(resultId);
+            });
+          }
+          else {
+            reply(Boom.notFound('story does not exists'));
+          }
         });
       }
     }

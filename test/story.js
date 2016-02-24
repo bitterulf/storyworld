@@ -118,6 +118,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
   var providerId;
   var actionId;
   var contentId;
+  var resultId;
 
   lab.experiment('story', function() {
     lab.test('can not be created without a session id', function (done) {
@@ -147,6 +148,20 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           expectSuccessResponse(response);
           isValidId(response.result.data);
           storyId = response.result.data;
+          done();
+        });
+      });
+    });
+    lab.test('can have results to be created into', function (done) {
+      createSessionId(server, function(err, sid) {
+        sessionId = sid;
+        server.inject({ method: "POST", url: "/story/"+storyId+"/result", payload: {
+          sessionId: sessionId,
+          name: 'first result'
+        }}, function(response) {
+          expectSuccessResponse(response);
+          isValidId(response.result.data);
+          resultId = response.result.data;
           done();
         });
       });
@@ -208,9 +223,10 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
     });
     lab.test('can retrieve the created stories', function (done) {
       server.inject({ method: "GET", url: "/stories?sessionId="+sessionId}, function(response) {
-        expectSuccessResponse(response);;
+        expectSuccessResponse(response);
 
         var story = createStoryFromData(response.result.data[0]);
+        var result = story.getResultByIndex(0);
         var provider = story.getProviderByIndex(0);
         var content = provider.getContentByIndex(0);
         var action = provider.getActionByIndex(0);
@@ -219,6 +235,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         Code.expect(story.data.name).to.equal('first story');
         Code.expect(story.data.username).to.equal('username');
         isValidId(story.id);
+        Code.expect(result.data.name).to.equal('first result');
+        isValidId(result.id);
         Code.expect(provider.data.name).to.equal('first provider');
         isValidId(provider.id);
         Code.expect(content.data.name).to.equal('first content');
