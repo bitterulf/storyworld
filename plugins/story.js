@@ -61,10 +61,10 @@ exports.register = function (server, options, next) {
 
   server.route({
     method: 'POST',
-    path: '/story/{storyId}/action',
+    path: '/story/{storyId}/provider',
     config: {
       tags: [pluginName],
-      description: 'route to add another action to a story',
+      description: 'route to add another provider to a story',
       validate: {
         payload: {
           sessionId: Joi.string().required(),
@@ -82,13 +82,13 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
 
           if (docs.length) {
-            var actionId = shortid.generate();
+            var providerId = shortid.generate();
             var setData = {};
-            setData['actions.'+actionId] = { name: request.payload.name };
+            setData['provider.'+providerId] = { name: request.payload.name };
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
-              reply(actionId);
+              reply(providerId);
             });
           }
           else {

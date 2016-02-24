@@ -70,12 +70,12 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         });
       });
     });
-    lab.test('can have actions to be created into', function (done) {
+    lab.test('can have providers to be created into', function (done) {
       createSessionId(server, function(err, sid) {
         sessionId = sid;
-        server.inject({ method: "POST", url: "/story/"+storyId+"/action", payload: {
+        server.inject({ method: "POST", url: "/story/"+storyId+"/provider", payload: {
           sessionId: sessionId,
-          name: 'first action'
+          name: 'first provider'
         }}, function(response) {
           expectSuccessResponse(response);
           Code.expect(response.result.data.length).to.equal(10);
@@ -93,9 +93,9 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         Code.expect(storyData.name).to.equal('first story');
         Code.expect(storyData.username).to.equal('username');
         Code.expect(storyData.id.length).to.equal(9);
-        var actionIds = _.keys(storyData.actions);
-        Code.expect(actionIds.length).to.equal(1);
-        Code.expect(storyData.actions[actionIds[0]].name).to.equal('first action');
+        var providerIds = _.keys(storyData.provider);
+        Code.expect(providerIds.length).to.equal(1);
+        Code.expect(storyData.provider[providerIds[0]].name).to.equal('first provider');
         done();
       });
     });
