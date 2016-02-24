@@ -39,6 +39,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
   var storyId;
   var providerId;
   var actionId;
+  var contentId;
 
   lab.experiment('story', function() {
     lab.test('can not be created without a session id', function (done) {
@@ -100,6 +101,20 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         });
       });
     });
+    lab.test('can have contents to be created into providers', function (done) {
+      createSessionId(server, function(err, sid) {
+        sessionId = sid;
+        server.inject({ method: "POST", url: "/story/"+storyId+"/provider/"+providerId+"/content", payload: {
+          sessionId: sessionId,
+          name: 'first content'
+        }}, function(response) {
+          expectSuccessResponse(response);
+          Code.expect(response.result.data.length).to.equal(10);
+          contentId = response.result.data;
+          done();
+        });
+      });
+    });
     lab.test('can have events to be created into actions', function (done) {
       createSessionId(server, function(err, sid) {
         sessionId = sid;
@@ -126,6 +141,8 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         var providerIds = _.keys(storyData.provider);
         Code.expect(providerIds.length).to.equal(1);
         Code.expect(storyData.provider[providerIds[0]].name).to.equal('first provider');
+        var contentIds = _.keys(storyData.provider[providerIds[0]].contents);
+        Code.expect(storyData.provider[providerIds[0]].contents[contentIds[0]].name).to.equal('first content');
         var actionIds = _.keys(storyData.provider[providerIds[0]].actions);
         Code.expect(storyData.provider[providerIds[0]].actions[actionIds[0]].name).to.equal('first action');
         var eventIds = _.keys(storyData.provider[providerIds[0]].actions[actionIds[0]].events);

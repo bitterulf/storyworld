@@ -84,7 +84,7 @@ exports.register = function (server, options, next) {
           if (docs.length) {
             var providerId = shortid.generate();
             var setData = {};
-            setData['provider.'+providerId] = { name: request.payload.name, actions: {} };
+            setData['provider.'+providerId] = { name: request.payload.name, actions: {}, contents: {} };
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
@@ -133,6 +133,50 @@ exports.register = function (server, options, next) {
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
               reply(actionId);
+            });
+          }
+          else {
+            reply(Boom.notFound('story does not exists'));
+          }
+        });
+      }
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/story/{storyId}/provider/{providerId}/content',
+    config: {
+      tags: [pluginName],
+      description: 'route to add another content to a provider',
+      validate: {
+        payload: {
+          sessionId: Joi.string().required(),
+          name: Joi.string().required()
+        },
+        params: {
+          storyId: Joi.string().min(7).max(14),
+          providerId: Joi.string().min(7).max(14)
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.story;
+        var query = {username: request.username, id: request.params.storyId};
+
+        db.find(query, function(err, docs) {
+          if (err) return reply(err);
+
+          if (docs.length) {
+            if (!docs[0].provider[request.params.providerId]) {
+              return reply(Boom.notFound('provider does not exists'));
+            }
+            var contentId = shortid.generate();
+            var setData = {};
+            setData['provider.'+request.params.providerId+'.contents.'+contentId] = { name: request.payload.name, events: {} };
+
+            db.update(query, { $set: setData }, {}, function (err, numReplaced) {
+              if (err) return reply(err);
+              reply(contentId);
             });
           }
           else {
