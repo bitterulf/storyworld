@@ -11,6 +11,10 @@ var generateId = function() {
   return id;
 };
 
+var nameValidator = Joi.string().regex(/^[a-zA-Z0-9 ]{5,30}$/).required();
+var sessionIdValidator = Joi.string().required();
+var idValidator = Joi.string().min(14).max(14);
+
 exports.register = function (server, options, next) {
   server.decorate('request', 'story', server.app.createDataStore());
 
@@ -22,8 +26,8 @@ exports.register = function (server, options, next) {
       description: 'route to create a story',
       validate: {
         payload: Joi.object().keys({
-          sessionId: Joi.string().required(),
-          name: Joi.string().regex(/^[a-zA-Z0-9 ]{5,30}$/).required()
+          sessionId: sessionIdValidator,
+          name: nameValidator
         })
       },
       handler: function (request, reply) {
@@ -51,7 +55,7 @@ exports.register = function (server, options, next) {
       description: 'route to retrieve all stories',
       validate: {
         query: {
-          sessionId: Joi.string().required()
+          sessionId: sessionIdValidator
         }
       },
       handler: function (request, reply) {
@@ -73,14 +77,14 @@ exports.register = function (server, options, next) {
       description: 'route to add another result to a story',
       validate: {
         payload: {
-          sessionId: Joi.string().required(),
-          name: Joi.string().required(),
+          sessionId: sessionIdValidator,
+          name: nameValidator,
           key: Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/).required(),
           events: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/)).min(1),
           type: Joi.string().valid('sum', 'last').required()
         },
         params: {
-          storyId: Joi.string().min(7).max(14)
+          storyId: idValidator
         }
       },
       handler: function (request, reply) {
@@ -116,14 +120,14 @@ exports.register = function (server, options, next) {
       description: 'route to add another provider to a story',
       validate: {
         payload: {
-          sessionId: Joi.string().required(),
-          name: Joi.string().required(),
+          sessionId: sessionIdValidator,
+          name: nameValidator,
           key: Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/).required(),
           type: Joi.string().valid('eq', 'gt', 'gte', 'lt', 'lte', 'ne').required(),
           value: Joi.string().required()
         },
         params: {
-          storyId: Joi.string().min(7).max(14)
+          storyId: idValidator
         }
       },
       handler: function (request, reply) {
@@ -159,12 +163,12 @@ exports.register = function (server, options, next) {
       description: 'route to add another action to a provider',
       validate: {
         payload: {
-          sessionId: Joi.string().required(),
-          name: Joi.string().required()
+          sessionId: sessionIdValidator,
+          name: nameValidator
         },
         params: {
-          storyId: Joi.string().min(7).max(14),
-          providerId: Joi.string().min(7).max(14)
+          storyId: idValidator,
+          providerId: idValidator
         }
       },
       handler: function (request, reply) {
@@ -203,12 +207,12 @@ exports.register = function (server, options, next) {
       description: 'route to add another content to a provider',
       validate: {
         payload: {
-          sessionId: Joi.string().required(),
-          name: Joi.string().required()
+          sessionId: sessionIdValidator,
+          name: nameValidator
         },
         params: {
-          storyId: Joi.string().min(7).max(14),
-          providerId: Joi.string().min(7).max(14)
+          storyId: idValidator,
+          providerId: idValidator
         }
       },
       handler: function (request, reply) {
@@ -247,13 +251,13 @@ exports.register = function (server, options, next) {
       description: 'route to add another event to a action',
       validate: {
         payload: {
-          sessionId: Joi.string().required(),
-          name: Joi.string().required()
+          sessionId: sessionIdValidator,
+          name: nameValidator
         },
         params: {
-          storyId: Joi.string().min(7).max(14),
-          providerId: Joi.string().min(7).max(14),
-          actionId: Joi.string().min(7).max(14)
+          storyId: idValidator,
+          providerId: idValidator,
+          actionId: idValidator
         }
       },
       handler: function (request, reply) {
