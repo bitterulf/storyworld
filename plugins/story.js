@@ -27,7 +27,7 @@ exports.register = function (server, options, next) {
 
         data.id = shortid.generate();
         data.username = request.username;
-        data.actions = {};
+        data.provider = {};
 
         db.insert(data, function(err, doc) {
           if (err) return reply(err);
@@ -84,7 +84,7 @@ exports.register = function (server, options, next) {
           if (docs.length) {
             var providerId = shortid.generate();
             var setData = {};
-            setData['provider.'+providerId] = { name: request.payload.name };
+            setData['provider.'+providerId] = { name: request.payload.name, actions: {} };
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
@@ -128,11 +128,59 @@ exports.register = function (server, options, next) {
             }
             var actionId = shortid.generate();
             var setData = {};
-            setData['provider.'+request.params.providerId+'.action.'+actionId] = { name: request.payload.name };
+            setData['provider.'+request.params.providerId+'.actions.'+actionId] = { name: request.payload.name, events: {} };
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
               reply(actionId);
+            });
+          }
+          else {
+            reply(Boom.notFound('story does not exists'));
+          }
+        });
+      }
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/story/{storyId}/provider/{providerId}/action/{actionId}/event',
+    config: {
+      tags: [pluginName],
+      description: 'route to add another event to a action',
+      validate: {
+        payload: {
+          sessionId: Joi.string().required(),
+          name: Joi.string().required()
+        },
+        params: {
+          storyId: Joi.string().min(7).max(14),
+          providerId: Joi.string().min(7).max(14),
+          actionId: Joi.string().min(7).max(14)
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.story;
+        var query = {username: request.username, id: request.params.storyId};
+
+        db.find(query, function(err, docs) {
+          if (err) return reply(err);
+
+          if (docs.length) {
+            if (!docs[0].provider[request.params.providerId]) {
+              return reply(Boom.notFound('provider does not exists'));
+            }
+            if (!docs[0].provider[request.params.providerId].actions[request.params.actionId]) {
+              return reply(Boom.notFound('action does not exists'));
+            }
+            var eventId = shortid.generate();
+            var setData = {};
+            setData['provider.'+request.params.providerId+'.actions.'+request.params.actionId+'.events.'+eventId] = { name: request.payload.name };
+
+            db.update(query, { $set: setData }, {}, function (err, numReplaced) {
+              if (err) return reply(err);
+              reply(eventId);
             });
           }
           else {
