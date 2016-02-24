@@ -99,6 +99,50 @@ exports.register = function (server, options, next) {
     }
   });
 
+  server.route({
+    method: 'POST',
+    path: '/story/{storyId}/provider/{providerId}/action',
+    config: {
+      tags: [pluginName],
+      description: 'route to add another action to a provider',
+      validate: {
+        payload: {
+          sessionId: Joi.string().required(),
+          name: Joi.string().required()
+        },
+        params: {
+          storyId: Joi.string().min(9).max(9),
+          providerId: Joi.string().min(3).max(10)
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.story;
+        var query = {username: request.username, id: request.params.storyId};
+
+        db.find(query, function(err, docs) {
+          if (err) return reply(err);
+
+          if (docs.length) {
+            if (!docs[0].provider[request.params.providerId]) {
+              return reply(Boom.notFound('provider does not exists'));
+            }
+            var actionId = shortid.generate();
+            var setData = {};
+            setData['provider.'+request.params.providerId+'.action.'+actionId] = { name: request.payload.name };
+
+            db.update(query, { $set: setData }, {}, function (err, numReplaced) {
+              if (err) return reply(err);
+              reply(actionId);
+            });
+          }
+          else {
+            reply(Boom.notFound('story does not exists'));
+          }
+        });
+      }
+    }
+  });
+
   next();
 };
 

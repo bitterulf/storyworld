@@ -37,6 +37,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
 
   var sessionId;
   var storyId;
+  var providerId;
 
   lab.experiment('story', function() {
     lab.test('can not be created without a session id', function (done) {
@@ -76,6 +77,20 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         server.inject({ method: "POST", url: "/story/"+storyId+"/provider", payload: {
           sessionId: sessionId,
           name: 'first provider'
+        }}, function(response) {
+          expectSuccessResponse(response);
+          Code.expect(response.result.data.length).to.equal(10);
+          providerId = response.result.data;
+          done();
+        });
+      });
+    });
+    lab.test('can have actions to be created into providers', function (done) {
+      createSessionId(server, function(err, sid) {
+        sessionId = sid;
+        server.inject({ method: "POST", url: "/story/"+storyId+"/provider/"+providerId+"/action", payload: {
+          sessionId: sessionId,
+          name: 'first action'
         }}, function(response) {
           expectSuccessResponse(response);
           Code.expect(response.result.data.length).to.equal(10);
