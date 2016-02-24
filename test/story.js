@@ -92,6 +92,10 @@ var expectErrorResponse = function(response, statusCode, message) {
   Code.expect(response.result.message).to.equal(message);
 };
 
+var isValidId = function(id) {
+  Code.expect(id.length).to.equal(14);
+};
+
 var createSessionId = function(server, cb) {
   server.inject({ method: "POST", url: "/identity", payload: {
     username: 'username', password: 'password', email: 'email@example.com'
@@ -141,7 +145,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first story'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(14);
+          isValidId(response.result.data);
           storyId = response.result.data;
           done();
         });
@@ -155,7 +159,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first provider'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(14);
+          isValidId(response.result.data);
           providerId = response.result.data;
           done();
         });
@@ -169,7 +173,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first action'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(14);
+          isValidId(response.result.data);
           actionId = response.result.data;
           done();
         });
@@ -183,7 +187,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first content'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(14);
+          isValidId(response.result.data);
           contentId = response.result.data;
           done();
         });
@@ -197,7 +201,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
           name: 'first event'
         }}, function(response) {
           expectSuccessResponse(response);
-          Code.expect(response.result.data.length).to.equal(14);
+          isValidId(response.result.data);
           done();
         });
       });
@@ -214,15 +218,15 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
 
         Code.expect(story.data.name).to.equal('first story');
         Code.expect(story.data.username).to.equal('username');
-        Code.expect(story.id.length).to.equal(14);
+        isValidId(story.id);
         Code.expect(provider.data.name).to.equal('first provider');
-        Code.expect(provider.id.length).to.equal(14);
+        isValidId(provider.id);
         Code.expect(content.data.name).to.equal('first content');
-        Code.expect(content.id.length).to.equal(14);
+        isValidId(story.id);
         Code.expect(action.data.name).to.equal('first action');
-        Code.expect(action.id.length).to.equal(14);
+        isValidId(action.id);
         Code.expect(event.data.name).to.equal('first event');
-        Code.expect(event.id.length).to.equal(14);
+        isValidId(event.id);
         done();
       });
     });
