@@ -7,7 +7,7 @@ exports.register = function (server, options, next) {
     type: 'onPreResponse',
     method: function (request, reply) {
       var response = request.response;
-      if (response.variety != 'file') {
+      if (response.variety != 'file' && response.variety != 'view') {
         if (response.isBoom) {
           return reply({status: 'error', message: response.message, code: response.output.payload.statusCode});
         }
