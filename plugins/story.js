@@ -117,7 +117,10 @@ exports.register = function (server, options, next) {
       validate: {
         payload: {
           sessionId: Joi.string().required(),
-          name: Joi.string().required()
+          name: Joi.string().required(),
+          key: Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/).required(),
+          type: Joi.string().valid('eq', 'gt', 'gte', 'lt', 'lte', 'ne').required(),
+          value: Joi.string().required()
         },
         params: {
           storyId: Joi.string().min(7).max(14)

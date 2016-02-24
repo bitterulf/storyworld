@@ -174,7 +174,10 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         sessionId = sid;
         server.inject({ method: "POST", url: "/story/"+storyId+"/provider", payload: {
           sessionId: sessionId,
-          name: 'first provider'
+          name: 'first provider',
+          key: 'location',
+          type: 'eq',
+          value: 'forest'
         }}, function(response) {
           expectSuccessResponse(response);
           isValidId(response.result.data);
