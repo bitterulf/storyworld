@@ -11,6 +11,12 @@ var generateId = function() {
   return id;
 };
 
+var createSetData = function(path, data) {
+  var setData = {};
+  setData[path.join('.')] = data;
+  return setData;
+};
+
 var nameValidator = Joi.string().regex(/^[a-zA-Z0-9 ]{5,30}$/).required();
 var sessionIdValidator = Joi.string().required();
 var idValidator = Joi.string().min(14).max(14);
@@ -97,8 +103,7 @@ exports.register = function (server, options, next) {
 
           if (count) {
             var resultId = generateId();
-            var setData = {};
-            setData['results.'+resultId] = { name: request.payload.name };
+            var setData = createSetData(['results', resultId], { name: request.payload.name });
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
@@ -135,13 +140,12 @@ exports.register = function (server, options, next) {
         var db = request.story;
         var query = {username: request.username, id: request.params.storyId};
 
-        db.find(query, function(err, docs) {
+        db.count(query, function(err, count) {
           if (err) return reply(err);
 
-          if (docs.length) {
+          if (count) {
             var providerId = generateId();
-            var setData = {};
-            setData['provider.'+providerId] = { name: request.payload.name, actions: {}, contents: {} };
+            var setData = createSetData(['provider', providerId], { name: request.payload.name, actions: {}, contents: {} });
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
@@ -176,15 +180,15 @@ exports.register = function (server, options, next) {
         var db = request.story;
         var query = {username: request.username, id: request.params.storyId};
 
-        db.find(query, function(err, docs) {
+        db.findOne(query, function(err, doc) {
           if (err) return reply(err);
 
-          if (docs.length) {
-            if (!docs[0].provider[request.params.providerId]) {
+          if (doc) {
+            if (!doc.provider[request.params.providerId]) {
               return reply(Boom.notFound('provider does not exists'));
             }
             var actionId = generateId();
-            var setData = {};
+            var setData = createSetData(['provider', request.params.providerId, 'actions', actionId], { name: request.payload.name, events: {} });
             setData['provider.'+request.params.providerId+'.actions.'+actionId] = { name: request.payload.name, events: {} };
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
@@ -220,16 +224,15 @@ exports.register = function (server, options, next) {
         var db = request.story;
         var query = {username: request.username, id: request.params.storyId};
 
-        db.find(query, function(err, docs) {
+        db.findOne(query, function(err, doc) {
           if (err) return reply(err);
 
-          if (docs.length) {
-            if (!docs[0].provider[request.params.providerId]) {
+          if (doc) {
+            if (!doc.provider[request.params.providerId]) {
               return reply(Boom.notFound('provider does not exists'));
             }
             var contentId = generateId();
-            var setData = {};
-            setData['provider.'+request.params.providerId+'.contents.'+contentId] = { name: request.payload.name, events: {} };
+            var setData = createSetData(['provider', request.params.providerId, 'contents', contentId], { name: request.payload.name, events: {} });
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);
@@ -265,19 +268,18 @@ exports.register = function (server, options, next) {
         var db = request.story;
         var query = {username: request.username, id: request.params.storyId};
 
-        db.find(query, function(err, docs) {
+        db.findOne(query, function(err, doc) {
           if (err) return reply(err);
 
-          if (docs.length) {
-            if (!docs[0].provider[request.params.providerId]) {
+          if (doc) {
+            if (!doc.provider[request.params.providerId]) {
               return reply(Boom.notFound('provider does not exists'));
             }
-            if (!docs[0].provider[request.params.providerId].actions[request.params.actionId]) {
+            if (!doc.provider[request.params.providerId].actions[request.params.actionId]) {
               return reply(Boom.notFound('action does not exists'));
             }
             var eventId = generateId();
-            var setData = {};
-            setData['provider.'+request.params.providerId+'.actions.'+request.params.actionId+'.events.'+eventId] = { name: request.payload.name };
+            var setData = createSetData(['provider', request.params.providerId, 'actions', request.params.actionId, 'events', eventId], { name: request.payload.name });
 
             db.update(query, { $set: setData }, {}, function (err, numReplaced) {
               if (err) return reply(err);

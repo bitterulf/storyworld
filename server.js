@@ -24,6 +24,9 @@ module.exports = function (options, cb) {
       find: function(query, cb) {
         store.find(query, cb);
       },
+      findOne: function(query, cb) {
+        store.findOne(query, cb);
+      },
       insert: function(doc, cb) {
         store.insert(doc, cb);
       },
