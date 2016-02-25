@@ -14,6 +14,7 @@ var generateId = function() {
 var nameValidator = Joi.string().regex(/^[a-zA-Z0-9 ]{5,30}$/).required();
 var sessionIdValidator = Joi.string().required();
 var idValidator = Joi.string().min(14).max(14);
+var keyValidator = Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/).required();
 
 exports.register = function (server, options, next) {
   server.decorate('request', 'story', server.app.createDataStore());
@@ -79,8 +80,8 @@ exports.register = function (server, options, next) {
         payload: {
           sessionId: sessionIdValidator,
           name: nameValidator,
-          key: Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/).required(),
-          events: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/)).min(1),
+          key: keyValidator,
+          events: Joi.array().items(keyValidator).min(1),
           type: Joi.string().valid('sum', 'last').required()
         },
         params: {
@@ -122,7 +123,7 @@ exports.register = function (server, options, next) {
         payload: {
           sessionId: sessionIdValidator,
           name: nameValidator,
-          key: Joi.string().regex(/^[a-zA-Z0-9-_]{1,20}$/).required(),
+          key: keyValidator,
           type: Joi.string().valid('eq', 'gt', 'gte', 'lt', 'lte', 'ne').required(),
           value: Joi.string().required()
         },
