@@ -92,10 +92,10 @@ exports.register = function (server, options, next) {
         var db = request.story;
         var query = {username: request.username, id: request.params.storyId};
 
-        db.find(query, function(err, docs) {
+        db.count(query, function(err, count) {
           if (err) return reply(err);
 
-          if (docs.length) {
+          if (count) {
             var resultId = generateId();
             var setData = {};
             setData['results.'+resultId] = { name: request.payload.name };

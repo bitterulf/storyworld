@@ -18,6 +18,9 @@ module.exports = function (options, cb) {
     var store = new Datastore();
 
     return {
+      count: function(query, cb) {
+        store.count(query, cb);
+      },
       find: function(query, cb) {
         store.find(query, cb);
       },
