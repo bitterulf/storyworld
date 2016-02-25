@@ -17,6 +17,9 @@ var createSetData = function(path, data) {
   return setData;
 };
 
+var providerTypes = ['eq', 'gt', 'gte', 'lt', 'lte', 'ne'];
+var resultTypes = ['sum', 'last'];
+
 var nameValidator = Joi.string().regex(/^[a-zA-Z0-9 ]{5,30}$/).required();
 var sessionIdValidator = Joi.string().required();
 var idValidator = Joi.string().min(14).max(14);
@@ -88,7 +91,7 @@ exports.register = function (server, options, next) {
           name: nameValidator,
           key: keyValidator,
           events: Joi.array().items(keyValidator).min(1),
-          type: Joi.string().valid('sum', 'last').required()
+          type: Joi.string().valid(resultTypes).required()
         },
         params: {
           storyId: idValidator
@@ -129,7 +132,7 @@ exports.register = function (server, options, next) {
           sessionId: sessionIdValidator,
           name: nameValidator,
           key: keyValidator,
-          type: Joi.string().valid('eq', 'gt', 'gte', 'lt', 'lte', 'ne').required(),
+          type: Joi.string().valid(providerTypes).required(),
           value: Joi.string().required()
         },
         params: {
