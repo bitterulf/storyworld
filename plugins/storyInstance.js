@@ -76,6 +76,36 @@ exports.register = function (server, options, next) {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: '/storyInstance/{storyInstanceId}',
+    config: {
+      tags: [pluginName],
+      description: 'route to retrieve the calculated state of a instance',
+      validate: {
+        query: {
+          sessionId: sessionIdValidator
+        },
+        params: {
+          storyInstanceId: idValidator
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.storyInstance;
+
+        db.findOne({username: request.username, id: request.params.storyInstanceId}, function(err, doc) {
+          if (err) return reply(err);
+          if (doc) {
+            reply(doc);
+          }
+          else {
+            return reply(Boom.notFound('story does not exists'));
+          }
+        });
+      }
+    }
+  });
+
   next();
 };
 

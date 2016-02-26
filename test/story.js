@@ -119,6 +119,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
   var actionId;
   var contentId;
   var resultId;
+  var storyInstanceId;
 
   lab.experiment('story', function() {
     lab.test('can not be created without a session id', function (done) {
@@ -261,6 +262,7 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         }}, function(response) {
         expectSuccessResponse(response);
         isValidId(response.result.data);
+        storyInstanceId = response.result.data;
         done();
       });
     });
@@ -268,6 +270,13 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
       server.inject({ method: "GET", url:"/storyInstances?sessionId="+sessionId }, function(response) {
         expectSuccessResponse(response);
         isValidId(response.result.data[0].id);
+        done();
+      });
+    });
+    lab.test('can retrieve the current state of a story instance', function (done) {
+      server.inject({ method: "GET", url:"/storyInstance/"+storyInstanceId+"?sessionId="+sessionId }, function(response) {
+        expectSuccessResponse(response);
+        isValidId(response.result.data.id);
         done();
       });
     });
