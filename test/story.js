@@ -254,5 +254,15 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         done();
       });
     });
+    lab.test('can create a story instance from a story', function (done) {
+      server.inject({ method: "POST", url: "/storyInstance", payload: {
+          sessionId: sessionId,
+          storyId: storyId
+        }}, function(response) {
+        expectSuccessResponse(response);
+        isValidId(response.result.data);
+        done();
+      });
+    });
   });
 });

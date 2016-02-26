@@ -46,7 +46,8 @@ module.exports = function (options, cb) {
       {register: require('./plugins/public.js'), options: {}},
       {register: require('./plugins/jsend.js'), options: {}},
       {register: require('./plugins/identity.js'), options: {}},
-      {register: require('./plugins/storyCreator.js'), options: {}}
+      {register: require('./plugins/storyCreator.js'), options: {}},
+      {register: require('./plugins/storyInstance.js'), options: {}}
     ], function(err) {
       cb(err, server);
     });
