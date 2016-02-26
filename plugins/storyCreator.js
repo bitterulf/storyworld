@@ -4,7 +4,7 @@ var passwordHash = require('password-hash');
 var sha1 = require("crypto-js/sha1");
 var shortid = require('shortid');
 
-var pluginName = 'story plugin';
+var pluginName = 'story creator plugin';
 
 var generateId = function() {
   var id = String("00000000000000" + shortid.generate()).slice(-14);
