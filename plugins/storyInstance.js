@@ -35,6 +35,7 @@ exports.register = function (server, options, next) {
           if (err) return reply(err);
           if (count) {
             var data = {
+              username: request.username,
               id: generateId(),
               username: request.username,
               events: [],
@@ -48,6 +49,28 @@ exports.register = function (server, options, next) {
           else {
             return reply(Boom.notFound('story does not exists'));
           }
+        });
+      }
+    }
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/storyInstances',
+    config: {
+      tags: [pluginName],
+      description: 'route to retrieve all own story instances',
+      validate: {
+        query: {
+          sessionId: sessionIdValidator
+        }
+      },
+      handler: function (request, reply) {
+        var db = request.storyInstance;
+
+        db.find({username: request.username}, function(err, docs) {
+          if (err) return reply(err);
+          reply(docs);
         });
       }
     }

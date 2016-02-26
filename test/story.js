@@ -264,5 +264,12 @@ require('../server.js')({host: 'localhost', port: 80}, function(err, server) {
         done();
       });
     });
+    lab.test('can retrieve a created instances', function (done) {
+      server.inject({ method: "GET", url:"/storyInstances?sessionId="+sessionId }, function(response) {
+        expectSuccessResponse(response);
+        isValidId(response.result.data[0].id);
+        done();
+      });
+    });
   });
 });
